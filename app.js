@@ -1,6 +1,5 @@
 var pieWidth = 400;
 var pieHeight = 400;
-var year = '1990';
 
 d3.csv('./data/all_data.csv', function(d) {
   return {
@@ -31,9 +30,8 @@ d3.csv('./data/all_data.csv', function(d) {
                    });
 
   var innerArcs = innerPie
-                    .value(function(d) {
-                      return getDataByYear(d.values, year).emissions;
-                    })(continentAgg)
+                    .value(getData.bind(null, d3.select('#year').attr('value')))
+                    (continentAgg)
 
   var innerPath = d3.arc()
                     .outerRadius(pieWidth / 4)
@@ -66,9 +64,8 @@ d3.csv('./data/all_data.csv', function(d) {
                    });
 
   var outerArcs = outerPie
-                    .value(function(d) {
-                      return getDataByYear(d.values, year).emissions;
-                    })(regionAgg)
+                    .value(getData.bind(null, d3.select('#year').attr('value')))
+                    (regionAgg)
 
   var outerPath = d3.arc()
                     .outerRadius(pieWidth / 2)
@@ -91,13 +88,11 @@ d3.csv('./data/all_data.csv', function(d) {
   d3.select('input')
     .on('input', function() {
       var newInnerArcs = innerPie
-                            .value(function(d) {
-                              return getDataByYear(d.values, d3.event.target.value).emissions; 
-                            })(continentAgg);
+                            .value(getData.bind(null, d3.event.target.value))
+                            (continentAgg);
       var newOuterArcs = outerPie
-                            .value(function(d) {
-                              return getDataByYear(d.values, d3.event.target.value).emissions; 
-                            })(regionAgg);
+                            .value(getData.bind(null, d3.event.target.value))
+                            (regionAgg);
       d3.selectAll('.innerarc')
         .data(newInnerArcs)
         .attr('d', innerPath);
@@ -109,18 +104,13 @@ d3.csv('./data/all_data.csv', function(d) {
 
 });
 
-function getDataByYear(arr,year) {
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i].key === year + "") {
-      return arr[i].value
+function getData(year, d) {
+  for (var i = 0; i < d.values.length; i++) {
+    if (d.values[i].key === year) {
+      return d.values[i].value.emissions
     }
   }
-  return {
-    emissions: 0,
-    emissionsPerCapita: 0,
-    population: 0,
-    continent: arr[0].value.continent
-  };
+  return 0;
 }
 
 function aggregateBy(key, data) {
