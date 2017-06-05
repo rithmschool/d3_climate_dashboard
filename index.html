@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>D3 Final Project</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <svg id="pie"></svg>
   <svg id="map"></svg>
   <svg id="bar"></svg>
   <input id="year" type="range" min="1990" max="2011" step="1" value="1990">
+  <input type="radio" name="data-type" value="emissions" checked>
+  <label>Emissions</label>
+  <input type="radio" name="data-type" value="emissionsPerCapita">
+  <label>Emissions Per Capita</label>
   <script src="https://d3js.org/d3.v4.js"></script>
   <script src="https://d3js.org/topojson.v2.js"></script>
   <script src="app.js"></script>
