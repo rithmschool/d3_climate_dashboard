@@ -4,7 +4,7 @@ var mapWidth = 600;
 var mapHeight = 300;
 var barChartWidth = 300;
 var barChartHeight = 300;
-var barChartPadding = 20;
+var barChartPadding = 30;
 
 d3.queue()
   .defer(d3.json, '//unpkg.com/world-atlas@1.1.4/world/50m.json')
@@ -182,27 +182,19 @@ d3.queue()
       .attr('fill', 'lightblue');
 
   // bar chart x axis
-  var xAxisScale = d3.scaleLinear()
+  var xScale = d3.scaleLinear()
                       .domain(d3.extent(years))
                       .range([barChartPadding, barChartWidth - barChartPadding]);
 
-  var xAxis = d3.axisBottom(xAxisScale)
+  var xAxis = d3.axisBottom(xScale)
                 .tickFormat(d3.format(""))
 
   d3.select('#bar')
     .append('g')
     .attr('transform', 'translate(0, ' + (barChartHeight - barChartPadding) + ')')
     .call(xAxis);
-  // var yAxis = d3.axisLeft(yScale)
-  //   .tickSize(- height + 2 * padding)
-  //   .tickSizeOuter(0)
-  //   .tickFormat(d3.formatPrefix(",.0", 1e6));
 
-
-  // d3.select('svg')
-  //   .append('g')
-  //   .attr('transform', 'translate(' + padding + ', 0)')
-  //   .call(yAxis);
+  updateBarChart({}, d3.select('input[name="data-type"]:checked').attr('value'))
 
   // // TEXT LABELS
   // d3.select('svg')
@@ -226,7 +218,15 @@ d3.queue()
     var yScale = d3.scaleLinear()
                      .domain([0, d3.max(data, function(d) { return d[dataType]; })])
                      .range([barChartHeight - barChartPadding, barChartPadding]);
-    // debugger
+    
+    var yAxis = d3.axisLeft(yScale)
+                .tickFormat(d3.formatPrefix(",.0", 1e6));
+
+    d3.select('#bar')
+      .append('g')
+      .attr('transform', 'translate(' + (barChartPadding - (barWidth + barPadding) / 2) + ', 0)')
+      .call(yAxis);
+
     d3.select("#bar")
       .selectAll('rect')
       .data(Object.keys(props).map(function(year) {
