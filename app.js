@@ -1,6 +1,5 @@
 var currentYear = d3.select('#year').attr('value');
 var currentDataType = d3.select('input[name="data-type"]:checked').attr('value');
-var currentCountry = null;
 
 d3.queue()
   .defer(d3.json, '//unpkg.com/world-atlas@1.1.4/world/50m.json')
@@ -24,20 +23,24 @@ d3.queue()
   var topoData = topojson.feature(mapData, mapData.objects.countries).features
 
   initPieChart(currentYear, continentAgg, regionAgg);
-  initMap(topoData, data, currentYear, currentDataType);
+  initMap(topoData, data);
+  updateMap(data, currentYear, currentDataType);
   initBarChart(data, currentDataType);
+  updateBarColoring(currentYear);
 
   d3.select('#year')
     .on('input', function() {
       currentYear = d3.event.target.value;
       updatePieChart(currentYear, continentAgg, regionAgg);
       updateMap(data, currentYear, currentDataType);
+      updateBarColoring(currentYear);
     });
 
   d3.selectAll('input[name="data-type"]')
     .on('change', function() {
       currentDataType = d3.event.target.value;
       updateMap(data, currentYear, currentDataType);
+      updateBarChart(currentCountry, data, currentDataType);
     });
 
   // // TEXT LABELS
@@ -58,6 +61,13 @@ d3.queue()
   //   .style('text-anchor', 'middle')
   //   .text('Gross Revenue, North America');
 
-
   // debugger
 });
+
+// TODO:
+// labels
+// tooltips
+// more styling
+// fix chart color
+// fix bar width
+// add map key for colors

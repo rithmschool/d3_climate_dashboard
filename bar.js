@@ -11,7 +11,9 @@ function initBarChart(data, dataType) {
       .attr('width', barChartWidth)
       .attr('height', barChartHeight)
     .selectAll('rect')
-    .data(years)
+    .data(years.map(function(year) {
+      return {year: year}
+    }))
     .enter()
     .append('rect')
       .attr('x', function(d, i) {
@@ -20,7 +22,7 @@ function initBarChart(data, dataType) {
       .attr('width', barWidth)
       .attr('y', 0)
       .attr('height', 0)
-      .attr('fill', 'lightblue');
+      .attr('fill', 'dodgerblue');
   // bar chart x axis
   var xScale = d3.scaleLinear()
                       .domain(d3.extent(years))
@@ -39,31 +41,53 @@ function initBarChart(data, dataType) {
       .classed('y-axis', true)
       .attr('transform', 'translate(' + (barChartPadding - (barWidth + barPadding) / 2) + ', 0)');
   
-  updateBarChart({}, data, dataType);
+  updateBarChart(null, data, dataType);
 }
 
+function updateBarColoring(year) {
+  d3.selectAll('rect')
+    .attr('fill', function(d) {
+      return +d.year === +year ? 'midnightblue' : 'dodgerblue';
+    })
+}
 
-function updateBarChart(props, data, dataType) {
+function updateBarChart(country, data, dataType) {
   var yScale = d3.scaleLinear()
                    .domain([0, d3.max(data, function(d) { return d[dataType]; })])
                    .range([barChartHeight - barChartPadding, barChartPadding]);
   
+  var units = {
+    emissions: 1e6,
+    emissionsPerCapita: 1
+  }
+
   var yAxis = d3.axisLeft(yScale)
-              .tickFormat(d3.formatPrefix(",.0", 1e6));
+              .tickFormat(d3.formatPrefix(",.0", units[dataType]));
 
   d3.select('.y-axis')
     .call(yAxis);
 
-  d3.select("#bar")
-    .selectAll('rect')
-    .data(Object.keys(props).map(function(year) {
-      return props[year] ? props[year][0] : props[year];
+  if (!country) {
+    d3.selectAll('rect')
+      .attr('y', 0)
+      .attr('height', 0);
+    return;
+  }
+
+  var years = country.data()[0].properties.years;
+
+  d3.selectAll('rect')
+    .data(Object.keys(years).map(function(year) {
+      var obj = years[year] || {};
+      obj.year = year;
+      return obj;
     }))
     .attr('y', function(d) {
-      return yScale(d ? d[dataType] : 0)
+      return yScale(d[dataType] || 0)
     })
     .attr('height', function(d) {
-      return barChartHeight - barChartPadding - yScale(d ? d[dataType] : 0);
+      return barChartHeight - barChartPadding - yScale(d[dataType] || 0);
     });
 
 }
+
