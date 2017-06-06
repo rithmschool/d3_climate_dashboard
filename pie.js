@@ -28,7 +28,7 @@ var outerPath = d3.arc()
 function initPieChart(year, continentData, regionData) {
   var colorScale = d3.scaleOrdinal()
                    .domain(continentData.map(function(c) { return c.key; }).sort())
-                   .range(['blue', 'orange', 'green', 'red', 'purple']);
+                   .range(['#009688', '#cddc39', '#673ab7', '#795548', '#9e9e9e']);
 
   var innerArcs = innerPie
                     .value(getData.bind(null, year))
