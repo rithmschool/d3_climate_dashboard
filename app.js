@@ -1,10 +1,11 @@
-var pieChartWidth = 300;
-var pieChartHeight = 300;
 var mapWidth = 600;
 var mapHeight = 300;
 var barChartWidth = 300;
 var barChartHeight = 300;
 var barChartPadding = 30;
+var currentYear = d3.select('#year').attr('value');
+var currentData = d3.select('input[name="data-type"]:checked').attr('value');
+var currentCountry = null;
 
 d3.queue()
   .defer(d3.json, '//unpkg.com/world-atlas@1.1.4/world/50m.json')
@@ -12,9 +13,9 @@ d3.queue()
     return {
       continent: d.Continent,
       country: d.Country,
-      countryCode: d["Country Code"],
-      emissions: +d["Total Emissions"],
-      emissionsPerCapita: +d["Emissions Per Capita"],
+      countryCode: d['Country Code'],
+      emissions: +d['Total Emissions'],
+      emissionsPerCapita: +d['Emissions Per Capita'],
       region: d.Region,
       year: +d.Year
     }
@@ -25,86 +26,14 @@ d3.queue()
   // Pie chart stuff
   var continentAgg = aggregateBy('continent', data);
   var regionAgg = aggregateBy('region', data)
-  var colorScale = d3.scaleOrdinal()
-                   .domain(continentAgg.map(function(c) { return c.key; }).sort())
-                   .range(['blue', 'orange', 'green', 'red', 'purple']);
   var years = continentAgg[0].values.map(function(d) { return d.key; });
 
-  // adding inner rings
-  var innerPie = d3.pie()
-                   .sort(function(a, b) {
-                     if (b.key < a.key) return 1;
-                     if (a.key < b.key) return -1;
-                     return 0;
-                   });
-
-  var innerArcs = innerPie
-                    .value(getData.bind(
-                      null, 
-                      d3.select('#year').attr('value')
-                    ))
-                    (continentAgg)
-
-  var innerPath = d3.arc()
-                    .outerRadius(pieChartWidth / 4)
-                    .innerRadius(0);
-
-  d3.select("#pie")
-      .attr('width', pieChartWidth)
-      .attr('height', pieChartHeight)
-    .append('g')
-      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + pieChartHeight / 2 + ')')
-    .selectAll('.innerarc')
-    .data(innerArcs)
-    .enter()
-      .append('path')
-      .classed('innerarc', true)
-      .attr('d', innerPath)
-      .attr('fill', function(d) {
-        return colorScale(d.data.key)
-      })
-      .attr('stroke', 'black')
-
-  // adding outer rings
-  var outerPie = d3.pie()
-               .sort(function(a, b) {
-                 var bCont = b.values[0].value.continent;
-                 var aCont = a.values[0].value.continent;
-                 if (bCont < aCont || bCont === aCont && b.key < a.key) return 1;
-                 if (aCont < bCont || aCont === bCont && a.key < b.key) return -1;
-                 return 0
-               })
-
-  var outerArcs = outerPie
-                    .value(getData.bind(
-                      null, 
-                      d3.select('#year').attr('value'),
-                    ))
-                    (regionAgg)
-
-  var outerPath = d3.arc()
-                    .outerRadius(pieChartWidth / 2)
-                    .innerRadius(pieChartWidth / 4);
-
-  d3.select('#pie')
-    .append('g')
-      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + pieChartHeight / 2 + ')')
-    .selectAll('.outerarc')
-    .data(outerArcs)
-    .enter()
-      .append('path')
-      .classed('outerarc', true)
-      .attr('d', outerPath)
-      .attr('fill', function(d) {
-        var color = colorScale(d.data.values[0].value.continent);
-        return d3.color(color).brighter(2);
-      })
-      .attr('stroke', 'black');
+  initPie(currentYear, continentAgg, regionAgg)
 
   d3.select('#year')
     .on('input', function() {
-      d3.select(this).attr('value', d3.event.target.value);
-      updatePieChart(d3.event.target.value);
+      currentYear = d3.event.target.value;
+      updatePieChart(currentYear, continentAgg, regionAgg);
       updateMap(
         d3.event.target.value,
         d3.select('input[name="data-type"]:checked').attr('value')
@@ -266,47 +195,5 @@ d3.queue()
       });
   }
 
-  function updatePieChart(year) {
-    var newInnerArcs = innerPie
-                          .value(getData.bind(null, year))
-                          (continentAgg);
-    var newOuterArcs = outerPie
-                          .value(getData.bind(null, year))
-                          (regionAgg);
-
-    d3.selectAll('.innerarc')
-      .data(newInnerArcs)
-      .attr('d', innerPath);
-
-    d3.selectAll('.outerarc')
-      .data(newOuterArcs)
-      .attr('d', outerPath);
-  }
   // debugger
 });
-
-function getData(year, d) {
-  for (var i = 0; i < d.values.length; i++) {
-    if (d.values[i].key === year) {
-      return d.values[i].value.emissions;
-    }
-  }
-  return 0;
-}
-
-function aggregateBy(key, data) {
-  return d3.nest()
-           .key(function(d) { return d[key]; })
-           .key(function(d) { return d.year; })
-           .rollup(function(dataArr) {
-             var summaryStats = dataArr.reduce(function(acc, next) {
-               acc.emissions += next.emissions;
-               acc.population += next.emissions / next.emissionsPerCapita;
-               return acc;
-             }, {emissions: 0, population: 0});
-             summaryStats.emissionsPerCapita = summaryStats.emissions / summaryStats.population;
-             summaryStats.continent = dataArr[0].continent;
-             return summaryStats;
-           })
-           .entries(data);
-}
