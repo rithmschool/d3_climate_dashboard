@@ -65,9 +65,7 @@ d3.queue()
 });
 
 // TODO:
-// labels
+// labels + axes
 // tooltips
 // more styling
-// fix chart color
-// fix bar width
 // add map key for colors

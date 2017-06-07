@@ -17,7 +17,7 @@ function initBarChart(data, dataType) {
     .enter()
     .append('rect')
       .attr('x', function(d, i) {
-        return i * (barWidth + barPadding) + barChartPadding - (barWidth + barPadding) / 2;
+        return i * (barWidth + barPadding) + barChartPadding;
       })
       .attr('width', barWidth)
       .attr('y', 0)
@@ -26,14 +26,15 @@ function initBarChart(data, dataType) {
   // bar chart x axis
   var xScale = d3.scaleLinear()
                       .domain(d3.extent(years))
-                      .range([barChartPadding, barChartWidth - barChartPadding]);
+                      .range([barChartPadding + barWidth / 2, barChartWidth - barChartPadding - barWidth / 2]);
 
   var xAxis = d3.axisBottom(xScale)
                 .tickFormat(d3.format(""))
 
   d3.select('#bar')
     .append('g')
-      .attr('transform', 'translate(0, ' + (barChartHeight - barChartPadding) + ')')
+      .attr('transform', 'translate(' +(-1/2) + ', ' + (barChartHeight - barChartPadding) + ')')
+      // .attr('transform', 'translate(' + ((barWidth + barPadding - 1) / 2) + ', ' + (barChartHeight - barChartPadding) + ')')
       .call(xAxis);
 
   d3.select('#bar')
