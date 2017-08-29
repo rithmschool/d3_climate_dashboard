@@ -1,6 +1,3 @@
-var currentYear = d3.select('#year').attr('value');
-var currentDataType = d3.select('input[name="data-type"]:checked').attr('value');
-
 d3.queue()
   .defer(d3.json, '//unpkg.com/world-atlas@1.1.4/world/50m.json')
   .defer(d3.csv, './data/all_data.csv', function(d) {
@@ -16,56 +13,47 @@ d3.queue()
   })
   .await(function (error, mapData, data) {
   if (error) throw error;
+  // Get GeoJSON data
+  var currentYear = +d3.select('#year')
+                       .attr('value');
+  var currentDataType = d3.select('input[name="data-type"]:checked')
+                           .attr('value');
+  var geoData = topojson.feature(mapData, mapData.objects.countries).features
+  
+  // Set Up map
+  createMap();
+  drawMap(geoData, data, currentYear, currentDataType);
 
-  // Pie chart stuff
-  var continentAgg = aggregateBy('continent', data);
-  var regionAgg = aggregateBy('region', data)
-  var topoData = topojson.feature(mapData, mapData.objects.countries).features
-
-  initPieChart(currentYear, continentAgg, regionAgg);
-  initMap(topoData, data);
-  updateMap(data, currentYear, currentDataType);
-  initBarChart(data, currentDataType);
-  updateBarColoring(currentYear);
+  // Draw bar chart
+  // Draw pie chart
+  // Add Event Listeners
+  
+  // var continentAgg = aggregateBy('continent', data);
+  // var regionAgg = aggregateBy('region', data)
+  // initPieChart(currentYear, continentAgg, regionAgg);
+  // initMap(geoData, data);
+  // updateMap(data, currentYear, currentDataType);
+  // initBarChart(data, currentDataType);
+  // updateBarColoring(currentYear);
 
   d3.select('#year')
     .on('input', function() {
-      currentYear = d3.event.target.value;
-      updatePieChart(currentYear, continentAgg, regionAgg);
-      updateMap(data, currentYear, currentDataType);
-      updateBarColoring(currentYear);
+      currentYear = +d3.event.target.value;
+      drawMap(geoData, data, currentYear, currentDataType);
+      // updatePieChart(currentYear, continentAgg, regionAgg);
+      // updateBarColoring(currentYear);
     });
 
   d3.selectAll('input[name="data-type"]')
     .on('change', function() {
       currentDataType = d3.event.target.value;
-      updateMap(data, currentYear, currentDataType);
-      updateBarChart(currentCountry, data, currentDataType);
+      drawMap(geoData, data, currentYear, currentDataType);
+      // updateBarChart(currentCountry, data, currentDataType);
     });
 
-  // // TEXT LABELS
-  // d3.select('svg')
-  //   .append('text')
-  //   .attr('x', width / 2)
-  //   .attr('y', height - padding)
-  //   .attr('dy', '2em')
-  //   .style('text-anchor', 'middle')
-  //   .text('Release Date');
-
-  // d3.select('svg')
-  //   .append('text')
-  //   .attr('transform', 'rotate(-90)')
-  //   .attr('x', - height / 2)
-  //   .attr('y', padding)
-  //   .attr('dy', '-2em')
-  //   .style('text-anchor', 'middle')
-  //   .text('Gross Revenue, North America');
-
-  // debugger
 });
 
 // TODO:
-// labels + axes
 // tooltips
 // more styling
 // add map key for colors

@@ -1,13 +1,20 @@
-var barChartWidth = 300;
+var barChartWidth = 550;
 var barChartHeight = 300;
-var barChartPadding = 30;
+var barChartPadding = {
+  top: 20,
+  right: 10,
+  bottom: 20,
+  left: 50
+};
 var barPadding = 1;
 
 function initBarChart(data, dataType) {
   var years = getYears(data)
-  var barWidth = (barChartWidth - 2 * barChartPadding) / years.length - barPadding;
+  var chartWidth = barChartWidth - barChartPadding.left - barChartPadding.right
+  var barWidth = chartWidth / years.length - barPadding;
+  var bar = d3.select("#bar");
 
-  d3.select('#bar')
+  bar
       .attr('width', barChartWidth)
       .attr('height', barChartHeight)
     .selectAll('rect')
@@ -17,7 +24,7 @@ function initBarChart(data, dataType) {
     .enter()
     .append('rect')
       .attr('x', function(d, i) {
-        return i * (barWidth + barPadding) + barChartPadding;
+        return i * (barWidth + barPadding) + barChartPadding.left;
       })
       .attr('width', barWidth)
       .attr('y', 0)
@@ -26,21 +33,37 @@ function initBarChart(data, dataType) {
   // bar chart x axis
   var xScale = d3.scaleLinear()
                       .domain(d3.extent(years))
-                      .range([barChartPadding + barWidth / 2, barChartWidth - barChartPadding - barWidth / 2]);
+                      .range([barChartPadding.left + barWidth / 2, barChartWidth - barChartPadding.right - barWidth / 2]);
 
   var xAxis = d3.axisBottom(xScale)
                 .tickFormat(d3.format(""))
 
-  d3.select('#bar')
+  bar
     .append('g')
-      .attr('transform', 'translate(' +(-1/2) + ', ' + (barChartHeight - barChartPadding) + ')')
-      // .attr('transform', 'translate(' + ((barWidth + barPadding - 1) / 2) + ', ' + (barChartHeight - barChartPadding) + ')')
+      .attr('transform', 'translate(-0.5, ' + (barChartHeight - barChartPadding.bottom) + ')')
       .call(xAxis);
 
-  d3.select('#bar')
+  bar
     .append('g')
       .classed('y-axis', true)
-      .attr('transform', 'translate(' + (barChartPadding - (barWidth + barPadding) / 2) + ', 0)');
+      .attr('transform', 'translate(' + barChartPadding.left + ', 0)');
+
+  bar
+    .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', - barChartHeight / 2)
+      .attr('y', barChartPadding.left)
+      .attr('dy', '-2.5em')
+      .style('text-anchor', 'middle')
+      .classed('y-axis-label', true);
+
+  bar
+    .append('text')
+      .attr('x', barChartWidth / 2)
+      .attr('y', '1em')
+      .attr('font-size', '1.5em')
+      .style('text-anchor', 'middle')
+      .classed('bar-title', true);
   
   updateBarChart(null, data, dataType);
 }
@@ -53,9 +76,23 @@ function updateBarColoring(year) {
 }
 
 function updateBarChart(country, data, dataType) {
+  var axisLabel = dataType === 'emissions' ?
+    "Carbon dioxide emissions, thousand metric tons" :
+    "Carbon dioxide emissions, metric tons per capita";
+
+  var barTitle = country ? 
+    "Carbon Dioxide Emissions, " + country.data()[0].properties.country :
+    "Click on a country to see annual trends.";
+
+  d3.select('.y-axis-label')
+    .text(axisLabel);
+
+  d3.select('.bar-title')
+    .text(barTitle);
+
   var yScale = d3.scaleLinear()
                    .domain([0, d3.max(data, function(d) { return d[dataType]; })])
-                   .range([barChartHeight - barChartPadding, barChartPadding]);
+                   .range([barChartHeight - barChartPadding.bottom, barChartPadding.top]);
   
   var units = {
     emissions: 1e6,
@@ -87,7 +124,7 @@ function updateBarChart(country, data, dataType) {
       return yScale(d[dataType] || 0)
     })
     .attr('height', function(d) {
-      return barChartHeight - barChartPadding - yScale(d[dataType] || 0);
+      return barChartHeight - barChartPadding.bottom - yScale(d[dataType] || 0);
     });
 
 }

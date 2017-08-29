@@ -1,4 +1,4 @@
-var pieChartWidth = 300;
+var pieChartWidth = 550;
 var pieChartHeight = 300;
 
 var innerPie = d3.pie()
@@ -18,12 +18,12 @@ var outerPie = d3.pie()
             });
 
 var innerPath = d3.arc()
-                  .outerRadius(pieChartWidth / 4)
+                  .outerRadius(pieChartHeight / 4)
                   .innerRadius(0);
 
 var outerPath = d3.arc()
-                  .outerRadius(pieChartWidth / 2)
-                  .innerRadius(pieChartWidth / 4);
+                  .outerRadius(pieChartHeight / 2 - 20)
+                  .innerRadius(pieChartHeight / 4);
 
 function initPieChart(year, continentData, regionData) {
   var colorScale = d3.scaleOrdinal()
@@ -44,7 +44,7 @@ function initPieChart(year, continentData, regionData) {
       .attr('width', pieChartWidth)
       .attr('height', pieChartHeight)
     .append('g')
-      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + pieChartHeight / 2 + ')')
+      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + (pieChartHeight / 2 + 10) + ')')
     .selectAll('.innerarc')
     .data(innerArcs)
     .enter()
@@ -52,13 +52,13 @@ function initPieChart(year, continentData, regionData) {
       .classed('innerarc', true)
       .attr('d', innerPath)
       .attr('fill', function(d) {
-        return colorScale(d.data.key)
+        return colorScale(d.data.key);
       })
       .attr('stroke', 'black');
 
   pie
     .append('g')
-      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + pieChartHeight / 2 + ')')
+      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + (pieChartHeight / 2 + 10) + ')')
     .selectAll('.outerarc')
     .data(outerArcs)
     .enter()
@@ -70,12 +70,22 @@ function initPieChart(year, continentData, regionData) {
         return d3.color(color).brighter(2);
       })
       .attr('stroke', 'black');
+
+  pie
+    .append('text')
+      .attr('x', pieChartWidth / 2)
+      .attr('y', '1em')
+      .attr('font-size', '1.5em')
+      .style('text-anchor', 'middle')
+      .classed('pie-title', true)
+      .text('Total emissions by continent and region, ' + year);
 }
 
 function updatePieChart(year, continentData, regionData) {
   var newInnerArcs = innerPie
                         .value(getData.bind(null, year))
                         (continentData);
+
   var newOuterArcs = outerPie
                         .value(getData.bind(null, year))
                         (regionData);
@@ -87,4 +97,7 @@ function updatePieChart(year, continentData, regionData) {
   d3.selectAll('.outerarc')
     .data(newOuterArcs)
     .attr('d', outerPath);
+
+  d3.select('.pie-title')
+    .text('Total emissions by continent and region, ' + year)
 }
