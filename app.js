@@ -24,8 +24,11 @@ d3.queue()
   createMap();
   drawMap(geoData, data, currentYear, currentDataType);
 
-  // Draw bar chart
   // Draw pie chart
+  createPie();
+  drawPie(data, currentYear);
+
+  // Draw bar chart
   // Add Event Listeners
   
   // var continentAgg = aggregateBy('continent', data);
@@ -35,11 +38,12 @@ d3.queue()
   // updateMap(data, currentYear, currentDataType);
   // initBarChart(data, currentDataType);
   // updateBarColoring(currentYear);
-
+  // debugger
   d3.select('#year')
     .on('input', function() {
       currentYear = +d3.event.target.value;
       drawMap(geoData, data, currentYear, currentDataType);
+      drawPie(data, currentYear);
       // updatePieChart(currentYear, continentAgg, regionAgg);
       // updateBarColoring(currentYear);
     });

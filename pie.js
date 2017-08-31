@@ -1,103 +1,83 @@
-var pieChartWidth = 550;
-var pieChartHeight = 300;
+function createPie() {
+  var width = 550;
+  var height = 300;
 
-var innerPie = d3.pie()
-                 .sort(function(a, b) {
-                   if (b.key < a.key) return 1;
-                   if (a.key < b.key) return -1;
-                   return 0;
-                 });
-
-var outerPie = d3.pie()
-            .sort(function(a, b) {
-              var bCont = b.values[0].value.continent;
-              var aCont = a.values[0].value.continent;
-              if (bCont < aCont || bCont === aCont && b.key < a.key) return 1;
-              if (aCont < bCont || aCont === bCont && a.key < b.key) return -1;
-              return 0;
-            });
-
-var innerPath = d3.arc()
-                  .outerRadius(pieChartHeight / 4)
-                  .innerRadius(0);
-
-var outerPath = d3.arc()
-                  .outerRadius(pieChartHeight / 2 - 20)
-                  .innerRadius(pieChartHeight / 4);
-
-function initPieChart(year, continentData, regionData) {
-  var colorScale = d3.scaleOrdinal()
-                   .domain(continentData.map(function(c) { return c.key; }).sort())
-                   .range(['#009688', '#cddc39', '#673ab7', '#795548', '#9e9e9e']);
-
-  var innerArcs = innerPie
-                    .value(getData.bind(null, year))
-                    (continentData);
-
-  var outerArcs = outerPie
-                    .value(getData.bind(null, year))
-                    (regionData);
-
-  var pie = d3.select("#pie");
+  var pie = d3.select('#pie');
 
   pie
-      .attr('width', pieChartWidth)
-      .attr('height', pieChartHeight)
+      .attr('width', width)
+      .attr('height', height)
     .append('g')
-      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + (pieChartHeight / 2 + 10) + ')')
-    .selectAll('.innerarc')
-    .data(innerArcs)
-    .enter()
-      .append('path')
-      .classed('innerarc', true)
-      .attr('d', innerPath)
-      .attr('fill', function(d) {
-        return colorScale(d.data.key);
-      })
-      .attr('stroke', 'black');
+      .attr('transform', 'translate(' + width / 2 + ', ' + (height / 2 + 10) + ')')
+      .classed('outer-chart', true);
 
   pie
     .append('g')
-      .attr('transform', 'translate(' + pieChartWidth / 2 + ', ' + (pieChartHeight / 2 + 10) + ')')
-    .selectAll('.outerarc')
-    .data(outerArcs)
-    .enter()
-      .append('path')
-      .classed('outerarc', true)
-      .attr('d', outerPath)
-      .attr('fill', function(d) {
-        var color = colorScale(d.data.values[0].value.continent);
-        return d3.color(color).brighter(2);
-      })
-      .attr('stroke', 'black');
+      .attr('transform', 'translate(' + width / 2 + ', ' + (height / 2 + 10) + ')')
+      .classed('inner-chart', true);
 
   pie
     .append('text')
-      .attr('x', pieChartWidth / 2)
+      .attr('x', width / 2)
       .attr('y', '1em')
       .attr('font-size', '1.5em')
       .style('text-anchor', 'middle')
-      .classed('pie-title', true)
-      .text('Total emissions by continent and region, ' + year);
+      .classed('pie-title', true);
 }
 
-function updatePieChart(year, continentData, regionData) {
-  var newInnerArcs = innerPie
-                        .value(getData.bind(null, year))
-                        (continentData);
+function drawPie(data, currentYear) {
+  var pie = d3.select("#pie");
+  var width = +pie.attr("width");
+  var height = +pie.attr("height");
 
-  var newOuterArcs = outerPie
-                        .value(getData.bind(null, year))
-                        (regionData);
+  // path functions
+  var arcs = d3.pie()
+                   .sort(function(a, b) {
+                     if (a.continent < b.continent) return -1;
+                     if (a.continent > b.continent) return 1;
+                     return a.emissions - b.emissions;
+                   })
+                   .value(d => d.emissions);
 
-  d3.selectAll('.innerarc')
-    .data(newInnerArcs)
-    .attr('d', innerPath);
+  var path = d3.arc()
+                    .outerRadius(height / 2 - 20)
+                    .innerRadius(0);
 
-  d3.selectAll('.outerarc')
-    .data(newOuterArcs)
-    .attr('d', outerPath);
+  // data
+  var yearData = data.filter(d => d.year === currentYear);
+  var continents = [];
+  for (var i = 0; i < yearData.length; i++) {
+    var continent = yearData[i].continent;
+    if (continents.indexOf(continent) === -1) {
+      continents.push(continent);
+    }
+  }
 
-  d3.select('.pie-title')
-    .text('Total emissions by continent and region, ' + year)
+  // color scale 
+  var colorScale = d3.scaleOrdinal()
+                   .domain(continents)
+                   .range(["#00ffff", "#ffff74", "#d276ff", "#f7ad93", "#c9c9c9"]);
+
+  // update pattern
+  var update = pie
+                .select(".outer-chart")
+                .selectAll(".outer-arc")
+                .data(arcs(yearData));
+
+  update
+    .exit()
+    .remove();
+
+  update  
+    .enter()
+      .append('path')
+      .classed('outer-arc', true)
+      .attr('stroke', 'black')
+    .merge(update)
+      .attr('fill', d => colorScale(d.data.continent))
+      .attr('d', path)
+
+  pie.select('.pie-title')
+      .text('Total emissions by continent and region, ' + currentYear);
+
 }

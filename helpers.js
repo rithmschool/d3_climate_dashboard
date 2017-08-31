@@ -30,9 +30,3 @@ function aggregateBy(key, data) {
            })
            .entries(data);
 }
-
-function graphTitle(str) {
-  return str.replace(/[A-Z]/g, function(c) {
-    return " " + c.toLowerCase();
-  });
-}

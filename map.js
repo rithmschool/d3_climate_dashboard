@@ -30,8 +30,6 @@ function drawMap(geoData, climateData, year, dataType) {
   var path = d3.geoPath()
                .projection(projection);
 
-  // color scale
-  var colors = ["#00ff00", 'yellow', 'orange', 'red', 'black'];
   // data
   geoData.forEach(function(d) {
     var countries = climateData.filter(row => row.countryCode === d.id);
@@ -41,6 +39,10 @@ function drawMap(geoData, climateData, year, dataType) {
   var update = map
                  .selectAll(".country")
                  .data(geoData);
+
+
+  // color scale
+  var colors = ["#00ff00", 'yellow', 'orange', 'red', 'black'];
   
   var domains = {
     emissions: [0, 2.5e5, 1e6, 5e6, 1e7],
@@ -51,6 +53,7 @@ function drawMap(geoData, climateData, year, dataType) {
                         .domain(domains[dataType])
                         .range(colors);
 
+  // update pattern
   update
     .enter()
     .append('path')
@@ -90,4 +93,8 @@ function drawMap(geoData, climateData, year, dataType) {
   
   d3.select('.map-title')
       .text("Carbon dioxide " + graphTitle(dataType) + ", " + year); 
+}
+
+function graphTitle(str) {
+  return str.replace(/[A-Z]/g, c => " " + c.toLowerCase());
 }
