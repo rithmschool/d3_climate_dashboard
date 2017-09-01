@@ -1,9 +1,14 @@
-#bar {
-  border: 1px solid black;
+.country {
+  stroke: none;
 }
 
 .country:hover {
   cursor: pointer;
+}
+
+.country.active {
+  stroke: dodgerblue;
+  stroke-width: 2px;
 }
 
 #map-container, 
@@ -40,4 +45,10 @@ body {
 
 svg {
   background-color: #fff;
+}
+
+#map-container:focus,
+#map-container:active,
+#chart-container:focus {
+  outline: none;
 }

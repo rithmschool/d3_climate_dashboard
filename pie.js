@@ -26,9 +26,9 @@ function createPie() {
 }
 
 function drawPie(data, currentYear) {
-  var pie = d3.select("#pie");
-  var width = +pie.attr("width");
-  var height = +pie.attr("height");
+  var pie = d3.select('#pie');
+  var width = +pie.attr('width');
+  var height = +pie.attr('height');
 
   // path functions
   var arcs = d3.pie()
@@ -56,12 +56,12 @@ function drawPie(data, currentYear) {
   // color scale 
   var colorScale = d3.scaleOrdinal()
                    .domain(continents)
-                   .range(["#00ffff", "#ffff74", "#d276ff", "#f7ad93", "#c9c9c9"]);
+                   .range(['#00ffff', '#ffff74', '#d276ff', '#f7ad93', '#c9c9c9']);
 
   // update pattern
   var update = pie
-                .select(".outer-chart")
-                .selectAll(".outer-arc")
+                .select('.outer-chart')
+                .selectAll('.outer-arc')
                 .data(arcs(yearData));
 
   update
