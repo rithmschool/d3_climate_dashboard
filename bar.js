@@ -35,7 +35,7 @@ function createBar() {
 function drawBar(data, dataType, country) {
   var bar = d3.select('#bar');
   var padding = {
-    top: 20,
+    top: 30,
     right: 30,
     bottom: 20,
     left: 80
@@ -53,7 +53,7 @@ function drawBar(data, dataType, country) {
 
   var yScale = d3.scaleLinear()
                  .domain([0, d3.max(countryData, d => d[dataType])])
-                 .range([height - padding.top, padding.bottom]);
+                 .range([height - padding.bottom, padding.top]);
 
   var barWidth = xScale(xScale.domain()[0] + 1) - xScale.range()[0];
 
@@ -100,8 +100,14 @@ function drawBar(data, dataType, country) {
   .merge(update)
     .attr('x', d => (xScale(d.year) + xScale(d.year - 1)) / 2)
     .attr('width', d => barWidth - barPadding)
-    .attr('y', d => yScale(d[dataType]))
-    .attr('height', d => height - padding.top - yScale(d[dataType]))
+    .attr('y', height - padding.bottom)
+    .attr('height', 0)
+    .transition()
+    .duration(1000)
+    .delay((d, i) => i * 100)
+    .ease(d3.easeBounceOut)
+      .attr('y', d => yScale(d[dataType]))
+      .attr('height', d => height - padding.bottom - yScale(d[dataType]))
 }
 
 function highlightBars(year) {

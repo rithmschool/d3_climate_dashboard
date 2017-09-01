@@ -47,9 +47,5 @@ d3.queue()
 
 });
 
-// TODO:
-// add animations to bar chart
-// keep bars from sitting over title in bar chart
-
 // tooltips
 // more styling
