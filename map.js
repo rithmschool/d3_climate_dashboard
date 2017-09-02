@@ -1,7 +1,4 @@
-function createMap() {
-  var width = 780;
-  var height = 600;
-
+function createMap(width, height) {
   var map = d3.select('#map')
                 .attr('width', width)
                 .attr('height', height);

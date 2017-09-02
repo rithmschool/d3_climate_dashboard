@@ -9,21 +9,28 @@
 <body>
   <div id="nav">
     <h2>CO<sub>2</sub> Dashboard</h2>
-  </div>
-  <div>
-    <input id="year" type="range" min="1990" max="2011" step="1" value="1990">
-    <input type="radio" name="data-type" value="emissions" checked>
-    <label>Emissions</label>
-    <input type="radio" name="data-type" value="emissionsPerCapita">
-    <label>Emissions Per Capita</label>
+    <p>
+      Explore CO<sub>2</sub> emissions by year. 
+      Current year: <span id="year-val"></span>
+      <input id="year" type="range" step="1">
+    </p>
+    <p>
+      Choose between total emissions or emissions per capita.
+      <input type="radio" name="data-type" value="emissions" checked>
+      <label>Emissions</label>
+      <input type="radio" name="data-type" value="emissionsPerCapita">
+      <label>Emissions Per Capita</label>
+    </p>
+    <p>Click on a country to see its trends by year.</p>
   </div>
   <div id="map-container">
     <svg id="map"></svg>
   </div>
   <div id="chart-container">
-    <svg id="bar"></svg>
     <svg id="pie"></svg>
+    <svg id="bar"></svg>
   </div>
+  <div class="tooltip"></div>
   <script src="https://d3js.org/d3.v4.js"></script>
   <script src="https://d3js.org/topojson.v2.js"></script>
   <script src="pie.js"></script>

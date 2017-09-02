@@ -18,11 +18,12 @@
 }
 
 #map-container {
-  width: 800px;
+  width: 45%;
+  margin-right: 2.5%;
 }
 
 #chart-container {
-  width: 400px;
+  width: 45%;
 }
 
 * {
@@ -41,14 +42,57 @@ body {
 #nav {
   background-color: #333;
   color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+#nav p {
+  margin: 4px;
+}
+
+#nav h2 {
+  margin: 0;
+  font-size: 2em;
+}
+
+#nav input {
+  margin-left: 20px;
+}
+
+input[type=radio] {
+  width: 1.5em;
+  height: 1.5em;
 }
 
 svg {
   background-color: #fff;
 }
 
-#map-container:focus,
-#map-container:active,
-#chart-container:focus {
-  outline: none;
+.tooltip {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+  border: 8px solid #38767c;
+  background-color: #75EAF2;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.tooltip p {
+  margin: 2px;
+}
+
+.tooltip:after {
+  content: ' ';
+  position: absolute;
+  left: 50%;
+  border: 8px solid transparent;
+  border-top-color: #38767c;
+  bottom: -24px;
+  margin-left: -4px;
+}
+
+.tick text {
+  font-size: 1.5em;
 }

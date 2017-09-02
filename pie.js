@@ -1,7 +1,4 @@
-function createPie() {
-  var width = 550;
-  var height = 300;
-
+function createPie(width, height) {
   var pie = d3.select('#pie');
 
   pie
@@ -9,7 +6,7 @@ function createPie() {
       .attr('height', height)
     .append('g')
       .attr('transform', 'translate(' + width / 2 + ', ' + (height / 2 + 10) + ')')
-      .classed('outer-chart', true);
+      .classed('chart', true);
 
   pie
     .append('g')
@@ -60,8 +57,8 @@ function drawPie(data, currentYear) {
 
   // update pattern
   var update = pie
-                .select('.outer-chart')
-                .selectAll('.outer-arc')
+                .select('.chart')
+                .selectAll('.arc')
                 .data(arcs(yearData));
 
   update
@@ -71,7 +68,7 @@ function drawPie(data, currentYear) {
   update  
     .enter()
       .append('path')
-      .classed('outer-arc', true)
+      .classed('arc', true)
       .attr('stroke', 'black')
     .merge(update)
       .attr('fill', d => colorScale(d.data.continent))

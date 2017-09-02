@@ -14,23 +14,34 @@ d3.queue()
   .await(function (error, mapData, data) {
   if (error) throw error;
 
-  var currentYear = +d3.select('#year')
-                       .attr('value');
+  var extremeYears = d3.extent(data, d => d.year);
+  var currentYear = extremeYears[0];
   var currentDataType = d3.select('input[name="data-type"]:checked')
                            .attr('value');
   var geoData = topojson.feature(mapData, mapData.objects.countries).features
-  
+
   // Set Up visualizations
-  createMap();
-  createPie();
-  createBar();
+  var width = +d3.select("#map-container")
+                 .node()
+                 .offsetWidth;
+  var height = 600;
+  createMap(width, height);
+  createPie(width, height / 2);
+  createBar(width, height / 2);
   drawMap(geoData, data, currentYear, currentDataType);
   drawPie(data, currentYear);
   drawBar(data, currentDataType, '');
 
-  d3.select('#year')
+  d3.select('#year-val')
+      .text(currentYear);
+
+  d3.select('#year')  
+      .property('min', extremeYears[0])
+      .property('max', extremeYears[1])
+      .property('value', extremeYears[0])
     .on('input', function() {
       currentYear = +d3.event.target.value;
+      d3.select("#year-val").text(currentYear)
       drawMap(geoData, data, currentYear, currentDataType);
       drawPie(data, currentYear);
       highlightBars(currentYear);
@@ -45,7 +56,51 @@ d3.queue()
       drawBar(data, currentDataType, country);
     });
 
+  d3.selectAll('svg')
+    .on('mousemove', updateTooltip)
+    .on('touchmove', updateTooltip)
+
+  function updateTooltip() {
+    var tgt = d3.select(d3.event.target);
+    var tooltip = d3.select('.tooltip');
+    var isCountry = tgt.classed('country');
+    var isBar = tgt.classed('bar');
+    var isArc = tgt.classed('arc');
+    var dataType = d3.select('input:checked')
+                     .property('value');
+    var units = dataType === 'emissions' ? 'thousand metric tons' : 'metric tons per capita';
+    var data;
+    var percentage = ''
+    if (isArc) percentage = `<p>Percentage of total: ${getPercentage(tgt.data()[0])}</p>`
+    if (isCountry) data = tgt.data()[0].properties;
+    if (isArc) data = tgt.data()[0].data;
+    if (isBar) data = tgt.data()[0];
+    tooltip
+      .style('opacity', +(isCountry || isBar || isArc))
+      .style('left', (d3.event.pageX - tooltip.node().offsetWidth / 2) + 'px')
+      .style('top', (d3.event.pageY - tooltip.node().offsetHeight - 10) + 'px')
+    if (data) {
+      var dataValue = data[dataType] ? 
+                      data[dataType].toLocaleString() + ' ' + units :
+                      'Data Not Available';
+      var year = data.year || +d3.select('#year').property('value');
+      tooltip
+        .html(`
+          <p>Country: ${data.country}</p>
+          <p>${formatDataType(dataType)}: ${dataValue}</p>
+          <p>Year: ${year}</p>
+          ${percentage}
+        `)
+    }
+  }
 });
 
-// tooltips
-// more styling
+function formatDataType(key) {
+  return key[0].toUpperCase() + key.slice(1).replace(/[A-Z]/g, c => ' ' + c);
+}
+
+function getPercentage(d) {
+  var angle = d.endAngle - d.startAngle;
+  var fraction = 100 * angle / (Math.PI * 2);
+  return fraction.toFixed(2) + "%";
+}

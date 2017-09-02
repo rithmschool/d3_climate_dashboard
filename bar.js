@@ -1,6 +1,4 @@
-function createBar() {
-  var width = 550;
-  var height = 300;
+function createBar(width, height) {
   var bar = d3.select('#bar');
 
   bar
@@ -21,6 +19,7 @@ function createBar() {
       .attr('x', - height / 2)
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
+      .style('font-size', '1em')
       .classed('y-axis-label', true);
 
   bar
@@ -37,8 +36,8 @@ function drawBar(data, dataType, country) {
   var padding = {
     top: 30,
     right: 30,
-    bottom: 20,
-    left: 80
+    bottom: 30,
+    left: 110
   };
   var barPadding = 1;
   var width = +bar.attr('width');
@@ -68,15 +67,17 @@ function drawBar(data, dataType, country) {
 
   d3.select('.y-axis')
       .attr('transform', 'translate(' + (padding.left - barWidth / 2) + ',0)')
+      .transition()
+      .duration(1000)
       .call(yAxis);
 
   // text labels
   var axisLabel = dataType === 'emissions' ?
-    'Carbon dioxide emissions, thousand metric tons' :
-    'Carbon dioxide emissions, metric tons per capita';
+    'CO2 emissions, thousand metric tons' :
+    'CO2 emissions, metric tons per capita';
 
   var barTitle = country ? 
-    'Carbon Dioxide Emissions, ' + country :
+    'CO2 Emissions, ' + country :
     'Click on a country to see annual trends.';
 
   d3.select('.y-axis-label')
@@ -87,27 +88,34 @@ function drawBar(data, dataType, country) {
 
   // update pattern
   var update = bar
-                 .selectAll('rect')
+                 .selectAll('.bar')
                  .data(countryData);
+
+  var t = d3.transition()
+            .duration(1000)
+            .ease(d3.easeBounceOut);
 
   update
     .exit()
-    .remove()
+    .transition(t)
+      .delay((d, i) => (update.exit().nodes().length - i - 1) * 100)
+      .attr("y", height - padding.bottom)
+      .attr("height", 0)
+      .remove()
 
   update
     .enter()
     .append('rect')
-  .merge(update)
-    .attr('x', d => (xScale(d.year) + xScale(d.year - 1)) / 2)
-    .attr('width', d => barWidth - barPadding)
-    .attr('y', height - padding.bottom)
-    .attr('height', 0)
-    .transition()
-    .duration(1000)
-    .delay((d, i) => i * 100)
-    .ease(d3.easeBounceOut)
-      .attr('y', d => yScale(d[dataType]))
-      .attr('height', d => height - padding.bottom - yScale(d[dataType]))
+      .classed('bar', true)
+      .attr('y', height - padding.bottom)
+      .attr('height', 0)
+    .merge(update)
+      .attr('x', d => (xScale(d.year) + xScale(d.year - 1)) / 2)
+      .attr('width', d => barWidth - barPadding)
+      .transition(t)
+      .delay((d, i) => i * 100)
+        .attr('y', d => yScale(d[dataType]))
+        .attr('height', d => height - padding.bottom - yScale(d[dataType]))
 }
 
 function highlightBars(year) {
