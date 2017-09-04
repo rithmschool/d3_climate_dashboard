@@ -21,7 +21,7 @@ d3.queue()
   var geoData = topojson.feature(mapData, mapData.objects.countries).features
 
   // Set Up visualizations
-  var width = +d3.select("#map-container")
+  var width = +d3.select(".chart-container")
                  .node()
                  .offsetWidth;
   var height = 300;

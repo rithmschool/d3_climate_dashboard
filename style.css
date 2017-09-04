@@ -1,34 +1,5 @@
-.country {
-  stroke: none;
-}
-
-.country:hover {
-  cursor: pointer;
-}
-
-.country.active {
-  stroke: dodgerblue;
-  stroke-width: 2px;
-}
-
-#map-container, 
-#chart-container {
-  display: inline-block;
-}
-
-#map-container,
-#chart-container {
-  width: 45%;
-  margin: 1% 2%;
-  vertical-align: top;
-}
-
 * {
   font-family: 'Source Sans Pro', sans-serif;
-}
-
-.y-axis-label {
-  font-size: 0.8em;
 }
 
 body {
@@ -54,9 +25,12 @@ body {
 #nav input {
   margin-left: 20px;
 }
-
-svg {
-  background-color: #fff;
+ 
+.chart-container {
+  display: inline-block;
+  width: 45%;
+  margin: 1% 2%;
+  vertical-align: top;
 }
 
 .tooltip {
@@ -81,6 +55,23 @@ svg {
   border-top-color: #38767c;
   bottom: -24px;
   margin-left: -4px;
+}
+
+.country {
+  stroke: none;
+}
+
+.country:hover {
+  cursor: pointer;
+}
+
+.country.active {
+  stroke: dodgerblue;
+  stroke-width: 2px;
+}
+
+.y-axis-label {
+  font-size: 0.8em;
 }
 
 .tick text {
