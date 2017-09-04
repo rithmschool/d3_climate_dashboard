@@ -57,7 +57,8 @@ function drawBar(data, dataType, country) {
   var barWidth = xScale(xScale.domain()[0] + 1) - xScale.range()[0];
 
   // axes
-  var xAxis = d3.axisBottom(xScale);
+  var xAxis = d3.axisBottom(xScale)
+                .tickFormat(d3.format('.0f'));
 
   d3.select('.x-axis')
       .attr('transform', 'translate(0,' + (height - padding.bottom) + ')')

@@ -24,10 +24,10 @@ d3.queue()
   var width = +d3.select("#map-container")
                  .node()
                  .offsetWidth;
-  var height = 600;
-  createMap(width, height);
-  createPie(width, height / 2);
-  createBar(width, height / 2);
+  var height = 300;
+  createMap(width, width * 4 / 5);
+  createPie(width, height);
+  createBar(width, height);
   drawMap(geoData, data, currentYear, currentDataType);
   drawPie(data, currentYear);
   drawBar(data, currentDataType, '');

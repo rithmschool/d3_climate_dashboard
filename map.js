@@ -16,7 +16,7 @@ function drawMap(geoData, climateData, year, dataType) {
   var map = d3.select('#map');
   // projection
   var projection = d3.geoMercator()
-                     .scale(130)
+                     .scale(110)
                      .translate([
                        +map.attr('width') / 2, 
                        +map.attr('height') / 1.4

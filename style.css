@@ -14,16 +14,13 @@
 #map-container, 
 #chart-container {
   display: inline-block;
-  padding: 20px;
 }
 
-#map-container {
-  width: 45%;
-  margin-right: 2.5%;
-}
-
+#map-container,
 #chart-container {
   width: 45%;
+  margin: 1% 2%;
+  vertical-align: top;
 }
 
 * {
@@ -35,16 +32,14 @@
 }
 
 body {
-  background-color: #eee;
   margin: 0;
 }
 
 #nav {
   background-color: #333;
   color: white;
-  padding: 20px;
+  padding: 15px;
   text-align: center;
-  font-size: 1.5em;
 }
 
 #nav p {
@@ -53,16 +48,11 @@ body {
 
 #nav h2 {
   margin: 0;
-  font-size: 2em;
+  font-size: 1.5em;
 }
 
 #nav input {
   margin-left: 20px;
-}
-
-input[type=radio] {
-  width: 1.5em;
-  height: 1.5em;
 }
 
 svg {
@@ -96,3 +86,4 @@ svg {
 .tick text {
   font-size: 1.5em;
 }
+
