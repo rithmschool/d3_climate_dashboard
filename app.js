@@ -24,12 +24,12 @@ d3.queue()
   var width = +d3.select(".chart-container")
                  .node()
                  .offsetWidth;
-  // var height = 300;
+  var height = 300;
   createMap(width, width * 4 / 5);
-  // createPie(width, height);
+  createPie(width, height);
   // createBar(width, height);
   drawMap(geoData, data, currentYear, currentDataType);
-  // drawPie(data, currentYear);
+  drawPie(data, currentYear);
   // drawBar(data, currentDataType, '');
 
   d3.select('#year')  
@@ -39,7 +39,7 @@ d3.queue()
     .on('input', function() {
       currentYear = +d3.event.target.value;
       drawMap(geoData, data, currentYear, currentDataType);
-      // drawPie(data, currentYear);
+      drawPie(data, currentYear);
       // highlightBars(currentYear);
     });
 
