@@ -65,8 +65,8 @@ d3.queue()
                      .property('value');
     var units = dataType === 'emissions' ? 'thousand metric tons' : 'metric tons per capita';
     var data;
-    // var percentage = ''
-    // if (isArc) percentage = `<p>Percentage of total: ${getPercentage(tgt.data()[0])}</p>`
+    var percentage = ''
+    if (isArc) percentage = `<p>Percentage of total: ${getPercentage(tgt.data()[0])}</p>`
     if (isCountry) data = tgt.data()[0].properties;
     if (isArc) data = tgt.data()[0].data;
     if (isBar) data = tgt.data()[0];
