@@ -5,8 +5,7 @@ function createPie(width, height) {
 
   pie.append('g')
       .attr('transform', 'translate(' + width / 2 + ', ' + (height / 2 + 10) + ')')
-      .classed('chart', true)
-      .classed('pie', true);
+      .classed('chart', true);
 
   pie.append('text')
       .attr('x', width / 2)
@@ -63,7 +62,8 @@ function drawPie(data, currentYear) {
     .enter()
       .append('path')
       .classed('arc', true)
-      .attr('stroke', 'black')
+      .attr('stroke', '#dff1ff')
+      .attr("stroke-width", '0.25px')
     .merge(update)
       .attr('fill', d => colorScale(d.data.continent))
       .attr('d', path)
