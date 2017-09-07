@@ -28,7 +28,8 @@ function createBar(width, height) {
 function highlightBars(year) {
   d3.select("#bar")
     .selectAll("rect")
-      .attr("fill", d => d.year === year ? "midnightblue" : "dodgerblue");
+      .attr("fill", d => d.year === year ? "#16a085" : "#1abc9c");
+      
 }
 
 function drawBar(data, dataType, country) {

@@ -5,7 +5,8 @@ function createPie(width, height) {
 
   pie.append('g')
       .attr('transform', 'translate(' + width / 2 + ', ' + (height / 2 + 10) + ')')
-      .classed('chart', true);
+      .classed('chart', true)
+      .classed('pie', true);
 
   pie.append('text')
       .attr('x', width / 2)
@@ -41,10 +42,12 @@ function drawPie(data, currentYear) {
     }
   }
 
+
+
   // color scale 
   var colorScale = d3.scaleOrdinal()
                    .domain(continents)
-                   .range(['#00ffff', '#ffff74', '#d276ff', '#f7ad93', '#c9c9c9']);
+                   .range(['#AB47BC', '#7E57C2', '#26A69A', '#42A5F5', '#78909C']);
 
   // update pattern
   var update = pie
