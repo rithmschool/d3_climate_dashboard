@@ -82,7 +82,7 @@ d3.queue()
         .html(`
           <p>Country: ${data.country}</p>
           <p>${formatDataType(dataType)}: ${dataValue}</p>
-          <p>Year: ${+d3.select('#year').property('value')}</p>
+          <p>Year: ${data.year || d3.select('#year').property('value')}</p>
           ${percentage}
         `)
     }
